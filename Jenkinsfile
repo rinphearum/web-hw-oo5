@@ -3,6 +3,11 @@ pipeline {
     tools {
         nodejs 'nodejs'
     }
+
+    environment {
+        IMAGE_NAME = 'kimheang68/react-jenkin'
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -14,25 +19,35 @@ pipeline {
             steps {
                 // sh 'npm run test'
                 echo "Test"
-
+                sh "echo IMAGE_NAME is ${env.IMAGE_NAME}" 
             }
         }
-stage('Build Image') {
+        stage('Check for Existing Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred'
-                , passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    script {
-                        sh 'docker build -t kimheang68/react-jenkin .'
-                        sh "echo \$PASS | docker login -u \$USER --password-stdin"
-                        sh 'docker push kimheang68/react-jenkin'
+                script {
+                    def imageExists = sh(script: "docker image ls -q ${env.IMAGE_NAME}", returnStatus: true)
+                    if (imageExists == 0) {
+                        sh "docker rmi ${env.IMAGE_NAME}"
                     }
                 }
             }
         }
-stage ('Deploy') {
+        stage('Build Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
+                        passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    script {
+                        sh 'docker build -t ${env.IMAGE_NAME} .'
+                        sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                        sh 'docker push ${env.IMAGE_NAME}'
+                    }
+                }
+            }
+        }
+        stage ('Deploy') {
             steps {
                 script {
-                    sh 'docker run  -p 3000:80 -d kimheang68/react-jenkin:latest'
+                    sh 'docker run  -p 3000:80 -d ${env.IMAGE_NAME}'
                 }
             }
         }
