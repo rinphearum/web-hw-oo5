@@ -28,7 +28,7 @@ pipeline {
                 script {
                     def containerId = sh(script: "docker ps -a --filter name=${env.CONTAINER_NAME} -q", returnStdout: true).trim()
                     sh "echo containerId is ${containerId}" 
-                    if (containerId == ${containerId}) {
+                    if (containerId) {
                         sh "docker rm ${containerId}"
                     } else {
                         sh "echo No existing container to remove"
@@ -42,9 +42,9 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
                         passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     script {
-                        sh 'docker build -t ${env.IMAGE_NAME} .'
+                        sh "docker build -t ${env.IMAGE_NAME} ."
                         sh "echo \$PASS | docker login -u \$USER --password-stdin"
-                        sh 'docker push ${env.IMAGE_NAME}'
+                        sh "docker push ${env.IMAGE_NAME}"
                     }
                 }
             }
@@ -52,7 +52,7 @@ pipeline {
         stage ('Deploy') {
             steps {
                 script {
-                    sh 'docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${env.IMAGE_NAME}'
+                    sh "docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${env.IMAGE_NAME}"
                 }
             }
         }
