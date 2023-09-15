@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs'
+        nodejs 'NodeJS'
     }
 
     environment {
@@ -20,23 +20,13 @@ pipeline {
                 // sh 'npm run test'
                 echo "Test"
                 sh "echo IMAGE_NAME is ${env.IMAGE_NAME}" 
-                sh "echo user_name is $USER" 
+
             }
         }
-        // stage('Check for Existing Image') {
-        //     steps {
-        //         script {
-        //             def imageExists = sh(script: "docker images ls -q ${env.IMAGE_NAME}", returnStatus: true)
-        //             if (imageExists == 0) {
-        //                 sh "docker rmi ${env.IMAGE_NAME}"
-        //             }
-        //         }
-        //     }
-        // }
         stage('Build Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
-                        passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred'
+                , passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     script {
                         sh 'docker build -t ${env.IMAGE_NAME} .'
                         sh "echo \$PASS | docker login -u \$USER --password-stdin"
@@ -47,6 +37,7 @@ pipeline {
         }
         stage ('Deploy') {
             steps {
+
                 script {
                     sh 'docker run  -p 3000:80 -d ${env.IMAGE_NAME}'
                 }
