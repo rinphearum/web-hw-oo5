@@ -6,6 +6,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'kimheang68/react-jenkin'
+        CONTAINER_NAME = 'my-container' // Specify the name of your container
     }
 
     stages {
@@ -22,16 +23,17 @@ pipeline {
                 sh "echo IMAGE_NAME is ${env.IMAGE_NAME}" 
             }
         }
-        stage('Check for Existing Image') {
+        stage('Check for Existing Container') {
             steps {
                 script {
-                    def imageExists = sh(script: "docker image ls -q ${env.IMAGE_NAME}", returnStatus: true)
-                    if (imageExists == 0) {
-                        sh "docker rmi ${env.IMAGE_NAME}"
+                    def containerExists = sh(script: "docker ps -a --filter name=${env.CONTAINER_NAME} -q", returnStatus: true)
+                    if (containerExists == 0) {
+                        sh "docker rm ${env.CONTAINER_NAME}"
                     }
                 }
             }
         }
+        
         stage('Build Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
@@ -47,7 +49,7 @@ pipeline {
         stage ('Deploy') {
             steps {
                 script {
-                    sh 'docker run  -p 3000:80 -d ${env.IMAGE_NAME}'
+                    sh 'docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${env.IMAGE_NAME}'
                 }
             }
         }
