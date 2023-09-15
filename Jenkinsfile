@@ -22,19 +22,17 @@ pipeline {
                 sh "echo IMAGE_NAME is ${env.IMAGE_NAME}" 
             }
         }
-        
-        node('Built-In Node') {
-                stage('Check for Existing Image') {
-                steps {
-                    script {
-                        def imageExists = sh(script: "docker image ls -q ${env.IMAGE_NAME}", returnStatus: true)
-                        if (imageExists == 0) {
-                            sh "docker rmi ${env.IMAGE_NAME}"
-                        }
+        stage('Check for Existing Image') {
+            steps {
+                script {
+                    def imageExists = sh(script: "docker image ls -q ${env.IMAGE_NAME}", returnStatus: true)
+                    if (imageExists == 0) {
+                        sh "docker rmi ${env.IMAGE_NAME}"
                     }
                 }
             }
-            stage('Build Image') {
+        }
+        stage('Build Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
                         passwordVariable: 'PASS', usernameVariable: 'USER')]) {
@@ -46,9 +44,6 @@ pipeline {
                 }
             }
         }
-
-        }
-        
         stage ('Deploy') {
             steps {
                 script {
