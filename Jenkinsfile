@@ -23,16 +23,16 @@ pipeline {
                 sh "echo user_name is $USER" 
             }
         }
-        stage('Check for Existing Image') {
-            steps {
-                script {
-                    def imageExists = sh(script: "docker images ls -q ${env.IMAGE_NAME}", returnStatus: true)
-                    if (imageExists == 0) {
-                        sh "docker rmi ${env.IMAGE_NAME}"
-                    }
-                }
-            }
-        }
+        // stage('Check for Existing Image') {
+        //     steps {
+        //         script {
+        //             def imageExists = sh(script: "docker images ls -q ${env.IMAGE_NAME}", returnStatus: true)
+        //             if (imageExists == 0) {
+        //                 sh "docker rmi ${env.IMAGE_NAME}"
+        //             }
+        //         }
+        //     }
+        // }
         stage('Build Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
