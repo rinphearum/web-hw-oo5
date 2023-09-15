@@ -23,7 +23,7 @@ pipeline {
             }
         }
         
-        node('master') {
+        node('Built-In Node') {
                 stage('Check for Existing Image') {
                 steps {
                     script {
