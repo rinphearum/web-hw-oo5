@@ -30,8 +30,8 @@ pipeline {
                     sh "echo containerId is ${containerId}" 
                     if (containerId) {
                         sh "docker rm ${containerId}"
-                    }eles{
-                        sh "no exist container" 
+                    } else {
+                        sh "echo No existing container to remove"
                     }
                 }
             }
