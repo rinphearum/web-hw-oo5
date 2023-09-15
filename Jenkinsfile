@@ -20,6 +20,7 @@ pipeline {
                 // sh 'npm run test'
                 echo "Test"
                 sh "echo IMAGE_NAME is ${env.IMAGE_NAME}" 
+                sh "echo user_name is $USER" 
             }
         }
         stage('Check for Existing Image') {
