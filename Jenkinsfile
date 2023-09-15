@@ -29,6 +29,7 @@ pipeline {
                     def containerId = sh(script: "docker ps -a --filter name=${env.CONTAINER_NAME} -q", returnStdout: true).trim()
                     sh "echo containerId is ${containerId}" 
                     if (containerId) {
+                        sh "docker stop ${containerId}"
                         sh "docker rm ${containerId}"
                     } else {
                         sh "echo No existing container to remove"
