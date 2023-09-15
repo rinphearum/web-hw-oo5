@@ -26,9 +26,9 @@ pipeline {
         stage('Check for Existing Container') {
             steps {
                 script {
-                    def containerExists = sh(script: "docker ps -a --filter name=${env.CONTAINER_NAME} -q", returnStatus: true)
-                    if (containerExists == 0) {
-                        sh "docker rm ${env.CONTAINER_NAME}"
+                    def containerId = sh(script: "docker ps -aq --filter name=${env.CONTAINER_NAME}", returnStatus: true).trim()
+                    if (!containerId.isEmpty()) {
+                        sh "docker rm ${containerId}"
                     }
                 }
             }
