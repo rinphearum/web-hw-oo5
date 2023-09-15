@@ -26,7 +26,7 @@ pipeline {
         stage('Check for Existing Image') {
             steps {
                 script {
-                    def imageExists = sh(script: "docker image ls -q ${env.IMAGE_NAME}", returnStatus: true)
+                    def imageExists = sh(script: "docker images ls -q ${env.IMAGE_NAME}", returnStatus: true)
                     if (imageExists == 0) {
                         sh "docker rmi ${env.IMAGE_NAME}"
                     }
