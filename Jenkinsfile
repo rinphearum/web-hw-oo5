@@ -34,7 +34,7 @@ pipeline {
         }
         stage('Build Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: '86f466ab-0366-4461-8d22-cc40fb1d489b',
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
                         passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     script {
                         sh 'docker build -t ${env.IMAGE_NAME} .'
