@@ -50,11 +50,23 @@ pipeline {
                 }
             }
         }
-        stage ('Deploy') {
+        // stage ('Deploy') {
+        //     steps {
+        //         script {
+        //             sh "docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${env.IMAGE_NAME}"
+        //         }
+        //     }
+        // }
+
+        stage('Deploy to Argo CD') {
             steps {
-                script {
-                    sh "docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${env.IMAGE_NAME}"
-                }
+                sh '''
+                    export ARGOCD_SERVER=argocd.mycompany.com
+                    export ARGOCD_AUTH_TOKEN=<JWT token generated from project>
+                    curl -sSL -o /usr/local/bin/argocd https://${ARGOCD_SERVER}/download/argocd-linux-amd64
+                    argocd app create --config argo-cd-app.yaml
+                    argocd app sync react-app
+                '''
             }
         }
     }
