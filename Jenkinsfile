@@ -7,6 +7,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'kimheang68/react-jenkin'
         CONTAINER_NAME = 'my-container' // Specify the name of your container
+        ARGOCD_SERVER = 'localhost:8888' // Set your Argo CD server URL
     }
 
     stages {
@@ -58,16 +59,31 @@ pipeline {
         //     }
         // }
 
-        // stage('Deploy to Argo CD') {
-        //     steps {
-        //         sh '''
-        //             export ARGOCD_SERVER=argocd.mycompany.com
-        //             export ARGOCD_AUTH_TOKEN=<JWT token generated from project>
-        //             curl -sSL -o /usr/local/bin/argocd https://${ARGOCD_SERVER}/download/argocd-linux-amd64
-        //             argocd app create --config argo-cd-app.yaml
-        //             argocd app sync react-app
-        //         '''
-        //     }
-        // }
+        stage('Deploy to Argo CD') {
+            steps {
+                script {
+                    // Generate a JWT token that expires in 7 days
+                    def authToken = sh(script: 'openssl rand -base64 32 | docker run --rm -i atmoz/jwt -g \'{"exp": 168 }\' -S supersecret', returnStdout: true).trim()
+
+                    // Set Argo CD application details
+                    def repoURL = 'https://github.com/KimheangKen/argocd-app-config.git'
+                    def path = 'dev'
+                    def namespace = 'myapp'
+                    def appName = 'your-app'
+
+                    // Download and install Argo CD CLI
+                    sh "curl -sSL -o /usr/local/bin/argocd https://${ARGOCD_SERVER}/download/argocd-linux-amd64"
+                    sh "chmod +x /usr/local/bin/argocd"
+
+                    // Log in to Argo CD server
+                    sh "argocd login ${ARGOCD_SERVER} --insecure --grpc-web --auth-token ${authToken}"
+
+                    // Create or sync the Argo CD application
+                    sh "argocd app create ${appName} --repo ${repoURL} --path ${path} --dest-server https://kubernetes.default.svc --dest-namespace ${namespace} --sync-policy automated"
+                    sh "argocd app sync ${appName}"
+                }
+            }
+        }
+
     }
 }
