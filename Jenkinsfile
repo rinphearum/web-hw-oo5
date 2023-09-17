@@ -23,33 +23,33 @@ pipeline {
                 sh "echo IMAGE_NAME is ${env.IMAGE_NAME}" 
             }
         }
-        stage('Check for Existing Container') {
-            steps {
-                script {
-                    def containerId = sh(script: "docker ps -a --filter name=${env.CONTAINER_NAME} -q", returnStdout: true).trim()
-                    sh "echo containerId is ${containerId}" 
-                    if (containerId) {
-                        sh "docker stop ${containerId}"
-                        sh "docker rm ${containerId}"
-                    } else {
-                        sh "echo No existing container to remove"
-                    }
-                }
-            }
-        }
+        // stage('Check for Existing Container') {
+        //     steps {
+        //         script {
+        //             def containerId = sh(script: "docker ps -a --filter name=${env.CONTAINER_NAME} -q", returnStdout: true).trim()
+        //             sh "echo containerId is ${containerId}" 
+        //             if (containerId) {
+        //                 sh "docker stop ${containerId}"
+        //                 sh "docker rm ${containerId}"
+        //             } else {
+        //                 sh "echo No existing container to remove"
+        //             }
+        //         }
+        //     }
+        // }
         
-        stage('Build Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
-                        passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    script {
-                        sh "docker build -t ${env.IMAGE_NAME} ."
-                        sh "echo \$PASS | docker login -u \$USER --password-stdin"
-                        sh "docker push ${env.IMAGE_NAME}"
-                    }
-                }
-            }
-        }
+        // stage('Build Image') {
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
+        //                 passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+        //             script {
+        //                 sh "docker build -t ${env.IMAGE_NAME} ."
+        //                 sh "echo \$PASS | docker login -u \$USER --password-stdin"
+        //                 sh "docker push ${env.IMAGE_NAME}"
+        //             }
+        //         }
+        //     }
+        // }
         // stage ('Deploy') {
         //     steps {
         //         script {
@@ -58,16 +58,16 @@ pipeline {
         //     }
         // }
 
-        stage('Deploy to Argo CD') {
-            steps {
-                sh '''
-                    export ARGOCD_SERVER=argocd.mycompany.com
-                    export ARGOCD_AUTH_TOKEN=<JWT token generated from project>
-                    curl -sSL -o /usr/local/bin/argocd https://${ARGOCD_SERVER}/download/argocd-linux-amd64
-                    argocd app create --config argo-cd-app.yaml
-                    argocd app sync react-app
-                '''
-            }
-        }
+        // stage('Deploy to Argo CD') {
+        //     steps {
+        //         sh '''
+        //             export ARGOCD_SERVER=argocd.mycompany.com
+        //             export ARGOCD_AUTH_TOKEN=<JWT token generated from project>
+        //             curl -sSL -o /usr/local/bin/argocd https://${ARGOCD_SERVER}/download/argocd-linux-amd64
+        //             argocd app create --config argo-cd-app.yaml
+        //             argocd app sync react-app
+        //         '''
+        //     }
+        // }
     }
 }
