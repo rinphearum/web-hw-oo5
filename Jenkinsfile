@@ -82,11 +82,11 @@ pipeline {
         stage('Commit and Push Changes') {
             steps {
                 script {
-                    sh 'git config --global user.email "kimheangken68.com"'
+                    sh 'git config --global user.email "kimheangken68@gmail.com"'
                     sh 'git config --global user.name "KimheangKen"'
                     sh 'git add argocd-app-config/dev/myapp-deployment.yaml'
                     sh 'git commit -m "Update image version"'
-                    sh 'git push origin main' // Push to the master branch, adjust if needed
+                    sh 'git push origin main' // Push to the main branch, adjust if needed
                 }
             }
         }
