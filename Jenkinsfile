@@ -63,6 +63,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 script {
+                    sh 'rm -rf argocd-app-config'
                     sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
                     sh 'cd argocd-app-config'
                 }
@@ -87,14 +88,14 @@ pipeline {
             }
         }
 
-        stage('Clean Up') {
-            steps {
-                script {
-                    sh 'cd ..' // Move out of the repository directory
-                    sh 'rm -rf argocd-app-config' // Remove the cloned directory
-                }
-            }
-        }
+        // stage('Clean Up') {
+        //     steps {
+        //         script {
+        //             sh 'cd ..' // Move out of the repository directory
+        //             sh 'rm -rf argocd-app-config' // Remove the cloned directory
+        //         }
+        //     }
+        // }
 
     }
 }
