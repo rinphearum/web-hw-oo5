@@ -7,19 +7,18 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'kimheang68'
         IMAGE_NAME = 'react-jenkin'
-        CONTAINER_NAME = 'my-container' // Specify the name of your container
+        CONTAINER_NAME = 'my-container'
+        REPO_DIR = 'argocd-app-config' // Specify the name of the repository directory
     }
 
     stages {
         stage('Build') {
             steps {
                 sh 'npm install'
-                // sh 'npm run build'
             }
         }
         stage('Test') {
             steps {
-                // sh 'npm run test'
                 echo "Test"
                 sh "echo IMAGE_NAME is ${env.IMAGE_NAME}" 
             }
@@ -53,19 +52,12 @@ pipeline {
                 }
             }
         }
-        // stage ('Deploy') {
-        //     steps {
-        //         script {
-        //             sh "docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${DOCKER_REGISTRY}/${imageTag}"
-        //         }
-        //     }
-        // }
         stage('Clone Repository') {
             steps {
                 script {
-                    sh 'rm -rf argocd-app-config'
-                    sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
-                    
+                    sh 'rm -rf ${REPO_DIR}'
+                    sh 'git clone https://github.com/KimheangKen/argocd-app-config.git ${REPO_DIR}'
+                    sh 'cd ${REPO_DIR}'
                 }
             }
         }
@@ -73,33 +65,20 @@ pipeline {
             steps {
                 script {
                     def imageVersion = 'new-image-version' // Get the new image version
-                    sh "sed -i 's/{{IMAGE_VERSION}}/${imageVersion}/' argocd-app-config/dev/myapp-deployment.yaml"
+                    sh "sed -i 's/{{IMAGE_VERSION}}/${imageVersion}/' dev/myapp-deployment.yaml"
                 }
             }
         }
-
-
         stage('Commit and Push Changes') {
             steps {
                 script {
                     sh 'git config --global user.email "kimheangken68@gmail.com"'
                     sh 'git config --global user.name "KimheangKen"'
-                    sh 'cd argocd-app-config'
                     sh 'git add .'
                     sh 'git commit -m "Update image version"'
                     sh 'git push origin main' // Push to the main branch, adjust if needed
                 }
             }
         }
-
-        // stage('Clean Up') {
-        //     steps {
-        //         script {
-        //             sh 'cd ..' // Move out of the repository directory
-        //             sh 'rm -rf argocd-app-config' // Remove the cloned directory
-        //         }
-        //     }
-        // }
-
     }
 }
