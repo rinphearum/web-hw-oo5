@@ -8,7 +8,6 @@ pipeline {
         DOCKER_REGISTRY = 'kimheang68'
         IMAGE_NAME = 'react-jenkin'
         CONTAINER_NAME = 'my-container' // Specify the name of your container
-
     }
 
     stages {
@@ -39,16 +38,15 @@ pipeline {
                 }
             }
         }
-        
         stage('Build Image') {
             steps {
-                def buildNumber = currentBuild.number
-                def imageTag = "${IMAGE_NAME}:${buildNumber}"
-                sh "docker build -t ${DOCKER_REGISTRY}/${imageTag} ."
+                script {
+                    def buildNumber = currentBuild.number
+                    def imageTag = "${IMAGE_NAME}:${buildNumber}"
+                    sh "docker build -t ${DOCKER_REGISTRY}/${imageTag} ."
 
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
-                        passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-cred',
+                            passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                         sh "echo \$PASS | docker login -u \$USER --password-stdin"
                         sh "docker push ${DOCKER_REGISTRY}/${imageTag}"
                     }
