@@ -91,7 +91,7 @@ pipeline {
                         sh 'cd argocd-app-config'
                         sh 'git add .'
                         sh 'git commit -m "Update image version"'
-                        sh "git push https://${USER}:${PASS}@github.com/${USER}/argocd-app-config.git HEAD:main"
+                        sh "git push https://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@github.com/${USER}/argocd-app-config.git HEAD:main"
                         // sh 'git push https://${USER}:${PASS}@github.com/KimheangKen/argocd-app-config.git HEAD:main ' // Push to the main branch, adjust if needed
                     }
                 }
