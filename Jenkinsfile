@@ -64,7 +64,7 @@ pipeline {
             steps {
                 script {
                     sh 'rm -rf argocd-app-config'
-                    sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
+                    // sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
                     
                 }
             }
@@ -78,25 +78,32 @@ pipeline {
             }
         }
 
-
-        stage('Commit and Push Changes') {
+        stage('Trigger ManifestUpdate') {
             steps {
-                script {
-                    
-
-                    withCredentials([usernamePassword(credentialsId: 'git-hub-cred',
-                            passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh 'git config --global user.email "kimheangken68@gmail.com"'
-                        sh 'git config --global user.name "KimheangKen"'
-                        sh 'cd argocd-app-config'
-                        sh 'git add .'
-                        sh 'git commit -m "Update image version"'
-                        sh 'git status'
-                        sh 'git push https://\$USER:\$PASS@github.com/KimheangKen/argocd-app-config.git HEAD:main ' // Push to the main branch, adjust if needed
-                    }
-                }
+                    build job: 'updatemanifest', parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
             }
         }
+        
+
+
+        // stage('Commit and Push Changes') {
+        //     steps {
+        //         script {
+                    
+
+        //             withCredentials([usernamePassword(credentialsId: 'git-hub-cred',
+        //                     passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+        //                 sh 'git config --global user.email "kimheangken68@gmail.com"'
+        //                 sh 'git config --global user.name "KimheangKen"'
+        //                 sh 'cd argocd-app-config'
+        //                 sh 'git add .'
+        //                 sh 'git commit -m "Update image version"'
+        //                 sh 'git status'
+        //                 sh 'git push https://\$USER:\$PASS@github.com/KimheangKen/argocd-app-config.git HEAD:main ' // Push to the main branch, adjust if needed
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('Clean Up') {
         //     steps {
