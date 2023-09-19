@@ -65,7 +65,7 @@ pipeline {
                 script {
                     sh 'rm -rf argocd-app-config'
                     sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
-                    sh 'cd argocd-app-config'
+                    
                 }
             }
         }
@@ -73,10 +73,11 @@ pipeline {
             steps {
                 script {
                     def imageVersion = 'new-image-version' // Get the new image version
-                    sh "sed -i 's/{{IMAGE_VERSION}}/${imageVersion}/' dev/myapp-deployment.yaml"
+                    sh "sed -i 's/{{IMAGE_VERSION}}/${imageVersion}/' argocd-app-config/dev/myapp-deployment.yaml"
                 }
             }
         }
+
 
         stage('Commit and Push Changes') {
             steps {
