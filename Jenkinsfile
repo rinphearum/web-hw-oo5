@@ -60,15 +60,15 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Clone Repository') {
-            steps {
-                script {
-                    sh 'rm -rf argocd-app-config'
-                    // sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
+        // stage('Clone Repository') {
+        //     steps {
+        //         script {
+        //             sh 'rm -rf argocd-app-config'
+        //             // sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
                     
-                }
-            }
-        }
+        //         }
+        //     }
+        // }
         
         stage('Trigger ManifestUpdate') {
             steps {
