@@ -72,7 +72,7 @@ pipeline {
             steps {
                 script {
                     def imageVersion = 'new-image-version' // Get the new image version
-                    sh "sed -i 's/{{IMAGE_VERSION}}/${imageVersion}/' /dev/deployment.yaml"
+                    sh "sed -i 's/{{IMAGE_VERSION}}/${imageVersion}/' /dev/myapp-deployment.yaml"
                     
                 }
             }
