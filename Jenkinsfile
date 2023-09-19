@@ -84,7 +84,8 @@ pipeline {
                 script {
                     sh 'git config --global user.email "kimheangken68@gmail.com"'
                     sh 'git config --global user.name "KimheangKen"'
-                    sh 'git add argocd-app-config/dev/myapp-deployment.yaml'
+                    sh 'cd argocd-app-config'
+                    sh 'git add .'
                     sh 'git commit -m "Update image version"'
                     sh 'git push origin main' // Push to the main branch, adjust if needed
                 }
