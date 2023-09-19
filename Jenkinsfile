@@ -53,12 +53,48 @@ pipeline {
                 }
             }
         }
-        stage ('Deploy') {
+        // stage ('Deploy') {
+        //     steps {
+        //         script {
+        //             sh "docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${DOCKER_REGISTRY}/${imageTag}"
+        //         }
+        //     }
+        // }
+        stage('Clone Repository') {
             steps {
                 script {
-                    sh "docker run -p 3000:80 -d --name ${env.CONTAINER_NAME} ${env.IMAGE_NAME}"
+                    sh 'git clone https://github.com/KimheangKen/argocd-app-config.git'
+                    sh 'cd argocd-app-config'
                 }
             }
         }
+        stage('Update Deployment File') {
+            steps {
+                script {
+                    def imageVersion = 'new-image-version' // Get the new image version
+                    sh "sed -i 's/{{IMAGE_VERSION}}/${imageVersion}/' /dev/deployment.yaml"
+                    
+                }
+            }
+        }
+        stage('Commit and Push Changes') {
+            steps {
+                script {
+                    sh 'git add .'
+                    sh 'git commit -m "Update image version"'
+                    sh 'git push origin master' // Push to the master branch, adjust if needed
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                script {
+                    sh 'cd ..' // Move out of the repository directory
+                    sh 'rm -rf argocd-app-config' // Remove the cloned directory
+                }
+            }
+        }
+
     }
 }
