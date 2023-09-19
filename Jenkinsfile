@@ -82,12 +82,17 @@ pipeline {
         stage('Commit and Push Changes') {
             steps {
                 script {
-                    sh 'git config --global user.email "kimheangken68@gmail.com"'
-                    sh 'git config --global user.name "KimheangKen"'
-                    sh 'cd argocd-app-config'
-                    sh 'git add .'
-                    sh 'git commit -m "Update image version"'
-                    sh 'git push https://github.com/KimheangKen/argocd-app-config.git HEAD:main ' // Push to the main branch, adjust if needed
+                    
+
+                    withCredentials([usernamePassword(credentialsId: 'git-hub-cred',
+                            passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh 'git config --global user.email "kimheangken68@gmail.com"'
+                        sh 'git config --global user.name "KimheangKen"'
+                        sh 'cd argocd-app-config'
+                        sh 'git add .'
+                        sh 'git commit -m "Update image version"'
+                        sh 'git push https://${USER}:${PASS}github.com/KimheangKen/argocd-app-config.git HEAD:main ' // Push to the main branch, adjust if needed
+                    }
                 }
             }
         }
